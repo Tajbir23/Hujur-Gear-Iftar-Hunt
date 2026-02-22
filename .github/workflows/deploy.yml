@@ -11,27 +11,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🔐 Deploy via SSH
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔨 Build Next.js
+        run: npm run build
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          NEXT_PUBLIC_SITE_URL: https://www.rockethujur.live
+          NODE_ENV: production
+
+      - name: 📤 Copy build to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: ".next/,public/,package.json,package-lock.json,next.config.mjs"
+          target: "/var/www/hujur-gear-iftar-hunt"
+          rm: false
+
+      - name: ♻️ Install prod deps & Restart PM2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          port: 22
           script: |
-            set -e
-            echo "📦 Pulling latest code..."
             cd /var/www/hujur-gear-iftar-hunt
-            git fetch origin main
-            git reset --hard origin/main
-
-            echo "📥 Installing dependencies..."
-            npm install --production=false
-
-            echo "🔨 Building Next.js..."
-            npm run build
-
-            echo "♻️ Restarting PM2..."
+            npm install --omit=dev
             pm2 restart ramadan-radar
-
-            echo "✅ Deployment complete!"
+            echo "✅ Deployment done!"
