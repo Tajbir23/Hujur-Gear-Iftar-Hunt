@@ -46,8 +46,18 @@ export default function IftarCrashPage() {
         setMenuFormOpen(true);
     };
 
-    const handleMosqueAdded = () => {
-        mutate();
+    const handleMosqueAdded = (newMosque) => {
+        if (newMosque) {
+            // Optimistic update: সাথে সাথে UI তে যোগ করো
+            mutate(
+                (currentData) => ({
+                    mosques: [newMosque, ...(currentData?.mosques || [])],
+                }),
+                { revalidate: true } // background এ re-fetch ও করো
+            );
+        } else {
+            mutate();
+        }
     };
 
     const handleIftarUpdated = () => {
