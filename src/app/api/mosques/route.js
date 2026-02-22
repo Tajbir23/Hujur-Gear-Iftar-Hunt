@@ -9,33 +9,14 @@ import { getClientIp, getDeviceId, checkRateLimit } from "@/lib/utils/fingerprin
  */
 export async function GET(request) {
     try {
-        const { searchParams } = new URL(request.url);
-        const lat = parseFloat(searchParams.get("lat"));
-        const lng = parseFloat(searchParams.get("lng"));
-        const radius = parseInt(searchParams.get("radius")) || 20000; // Increased to 20km default
-
-        if (isNaN(lat) || isNaN(lng)) {
-            return NextResponse.json(
-                { error: "lat এবং lng প্যারামিটার আবশ্যক" },
-                { status: 400 }
-            );
-        }
-
         await connectDB();
 
-        const mosques = await Mosque.find({
-            location: {
-                $nearSphere: {
-                    $geometry: {
-                        type: "Point",
-                        coordinates: [lng, lat],
-                    },
-                    $maxDistance: radius,
-                },
-            },
-        })
+        // সব মসজিদ (সর্বশেষ যোগ করাগুলো আগে) 
+        // আপনি চাইলে ৫০০ লিমিট রাখতে পারেন
+        const mosques = await Mosque.find({})
+            .sort({ createdAt: -1 })
             .lean()
-            .limit(100);
+            .limit(500);
 
         return NextResponse.json({ mosques });
     } catch (error) {

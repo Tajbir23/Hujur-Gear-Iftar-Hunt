@@ -30,7 +30,7 @@ export default function IftarCrashPage() {
     const [menuFormOpen, setMenuFormOpen] = useState(false);
 
     const { data, mutate } = useSWR(
-        lat && lng ? `/api/mosques?lat=${lat}&lng=${lng}&radius=20000` : null,
+        `/api/mosques`,
         fetcher,
         {
             refreshInterval: 60000,

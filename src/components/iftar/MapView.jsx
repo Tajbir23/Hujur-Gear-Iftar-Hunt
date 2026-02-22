@@ -48,7 +48,7 @@ export default function MapView({ lat, lng, onSelectMosque, onAddMosque }) {
     }, []);
 
     const { data, error, isLoading } = useSWR(
-        lat && lng ? `/api/mosques?lat=${lat}&lng=${lng}&radius=20000` : null,
+        "/api/mosques",
         fetcher,
         {
             refreshInterval: 60000,
