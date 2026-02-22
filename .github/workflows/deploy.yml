@@ -30,24 +30,22 @@ jobs:
           NEXT_PUBLIC_SITE_URL: https://www.rockethujur.live
           NODE_ENV: production
 
-      - name: 📤 Copy build to VPS
+      - name: 📤 Copy build & node_modules to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: ".next/,public/,package.json,package-lock.json,next.config.mjs"
+          source: ".next/,node_modules/,public/,package.json,next.config.mjs"
           target: "/var/www/hujur-gear-iftar-hunt"
           rm: false
 
-      - name: ♻️ Install prod deps & Restart PM2
+      - name: ♻️ Restart PM2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /var/www/hujur-gear-iftar-hunt
-            npm install --omit=dev
             pm2 restart ramadan-radar
             echo "✅ Deployment done!"
