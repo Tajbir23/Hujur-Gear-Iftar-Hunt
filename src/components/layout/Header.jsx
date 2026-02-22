@@ -4,11 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { MapPin, Rocket, Menu, X } from "lucide-react";
+import { MapPin, Rocket, BookOpen, Menu, X } from "lucide-react";
 
 const navLinks = [
     { href: "/iftar-crash", label: "ইফতার ক্র্যাশ", icon: MapPin, emoji: "🍛" },
     { href: "/rocket-hujur", label: "রকেট হুজুর", icon: Rocket, emoji: "🚀" },
+    { href: "/guide", label: "গাইড", icon: BookOpen, emoji: "📖" },
 ];
 
 export default function Header() {
