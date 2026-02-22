@@ -1,65 +1,224 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { MapPin, Rocket, Utensils, Clock, Users, Shield } from "lucide-react";
+import Card from "@/components/ui/Card";
+
+const modules = [
+  {
+    href: "/iftar-crash",
+    emoji: "🍛",
+    title: "ইফতার ক্র্যাশ",
+    subtitle: "ব্যাচেলর এডিশন",
+    description: "কাছাকাছি মসজিদে ইফতারের মেনু খুঁজুন। আজকের খাবার, ভিড়ের অবস্থা দেখুন এবং নিজেও আপডেট দিন।",
+    icon: MapPin,
+    gradient: "from-emerald-500 to-teal-600",
+    features: ["📍 ম্যাপ ও লিস্ট ভিউ", "🍽️ লাইভ মেনু আপডেট", "👥 ভিড়ের অবস্থা"],
+  },
+  {
+    href: "/rocket-hujur",
+    emoji: "🚀",
+    title: "রকেট হুজুর",
+    subtitle: "ট্র্যাকার",
+    description: "কোন মসজিদে ২০ রাকাত তারাবি সবচেয়ে দ্রুত শেষ হয়? রিয়েল-টাইম লিডারবোর্ড ও র‍্যাংকিং।",
+    icon: Rocket,
+    gradient: "from-amber-500 to-orange-600",
+    features: ["🏆 লাইভ লিডারবোর্ড", "⏱️ তারাবি টাইমিং", "❄️ সুবিধার ট্যাগ"],
+  },
+];
+
+const features = [
+  {
+    icon: Shield,
+    title: "লগইন লাগবে না",
+    desc: "সাথে সাথে শুরু করুন। রেজিস্ট্রেশন নেই, পাসওয়ার্ড নেই।",
+  },
+  {
+    icon: MapPin,
+    title: "জিপিএস ভেরিফাইড",
+    desc: "আপডেট জিও-ফেন্সড — আপনাকে মসজিদের কাছে থাকতে হবে।",
+  },
+  {
+    icon: Users,
+    title: "কমিউনিটি ভেরিফাইড",
+    desc: "ফ্যাক্ট-চেক সিস্টেম স্প্যাম ঠেকায়। প্রতিটি আপডেটে ভোট দিন।",
+  },
+  {
+    icon: Clock,
+    title: "সময় নিয়ন্ত্রিত",
+    desc: "ইফতার আপডেট আসর–মাগরিবে। তারাবি আপডেট ইশার পরে।",
+  },
+];
+
+const stagger = {
+  container: {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  },
+  item: {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  },
+};
+
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
+    <div className="relative overflow-hidden">
+      {/* ডেকোরেটিভ ব্যাকগ্রাউন্ড */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute -top-20 -left-32 w-80 h-80 bg-accent/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 left-1/2 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl" />
+      </div>
+
+      {/* হিরো সেকশন */}
+      <section className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-16 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="space-y-6"
+        >
+          <motion.div
+            animate={{
+              y: [0, -15, 0],
+              rotate: [0, 5, -5, 0],
+            }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            className="text-7xl sm:text-8xl mb-8"
+          >
+            🌙
+          </motion.div>
+
+          <h1 className="text-4xl sm:text-6xl font-extrabold">
+            <span className="bg-gradient-to-r from-primary-light via-primary to-accent bg-clip-text text-transparent">
+              রমাদান রাডার
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="text-lg sm:text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed">
+            ইফতারের দাওয়াত ও বাজ-গতির তারাবি নামাজ খুঁজে পেতে
+            কমিউনিটি-চালিত আপনার গাইড। লগইন লাগবে না — শুধু আপনার লোকেশন দিন।
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-text-muted">
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-bg-surface border border-border">
+              <Utensils size={14} className="text-primary" />
+              ফ্রি ও ওপেন
+            </span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-bg-surface border border-border">
+              <Shield size={14} className="text-accent" />
+              রেজিস্ট্রেশন নেই
+            </span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-bg-surface border border-border">
+              <MapPin size={14} className="text-blue-400" />
+              জিপিএস ভেরিফাইড
+            </span>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* মডিউল কার্ড */}
+      <section className="relative max-w-5xl mx-auto px-4 sm:px-6 pb-20">
+        <motion.div
+          variants={stagger.container}
+          initial="hidden"
+          animate="show"
+          className="grid md:grid-cols-2 gap-6"
+        >
+          {modules.map((mod) => (
+            <motion.div key={mod.href} variants={stagger.item}>
+              <Link href={mod.href} className="block group">
+                <div className="relative rounded-2xl border border-border bg-bg-card p-8 overflow-hidden transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-elevated group-hover:scale-[1.02]">
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${mod.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
+                  />
+
+                  <div className="relative space-y-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-4xl">{mod.emoji}</span>
+                      <div>
+                        <h2 className="text-xl font-bold text-text-primary">
+                          {mod.title}
+                        </h2>
+                        <p className="text-xs text-text-muted font-medium uppercase tracking-wider">
+                          {mod.subtitle}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-text-secondary leading-relaxed">
+                      {mod.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {mod.features.map((feature) => (
+                        <span
+                          key={feature}
+                          className="text-xs px-2.5 py-1 rounded-lg bg-bg-surface border border-border text-text-muted"
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all">
+                      <span>দেখুন</span>
+                      <span className="transition-transform group-hover:translate-x-1">→</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* কিভাবে কাজ করে */}
+      <section className="relative max-w-5xl mx-auto px-4 sm:px-6 pb-24">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">
+            কিভাবে কাজ করে
+          </h2>
+          <p className="text-text-secondary mt-2">
+            বিশ্বাসযোগ্যতা, গতি ও কমিউনিটির জন্য তৈরি
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={stagger.container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5"
+        >
+          {features.map((feature) => (
+            <motion.div key={feature.title} variants={stagger.item}>
+              <Card className="text-center h-full">
+                <feature.icon
+                  size={28}
+                  className="mx-auto text-primary mb-3"
+                />
+                <h3 className="font-semibold text-text-primary text-sm mb-1">
+                  {feature.title}
+                </h3>
+                <p className="text-xs text-text-muted leading-relaxed">
+                  {feature.desc}
+                </p>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
     </div>
   );
 }
