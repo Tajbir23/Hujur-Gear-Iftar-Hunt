@@ -83,6 +83,11 @@ export default function RootLayout({ children }) {
           <footer className="border-t border-border py-6 text-center text-xs text-text-muted">
             <p>🌙 রমাদান রাডার — উম্মাহর জন্য ❤️ দিয়ে তৈরি</p>
             <p className="mt-1">কমিউনিটি-চালিত। লগইন লাগবে না।</p>
+            <div className="flex items-center justify-center gap-3 mt-2">
+              <a href="/guide" className="text-text-muted hover:text-primary transition-colors">📖 গাইড</a>
+              <span className="text-border">·</span>
+              <a href="/privacy" className="text-text-muted hover:text-primary transition-colors">🔒 গোপনীয়তা নীতি</a>
+            </div>
           </footer>
         </div>
 
