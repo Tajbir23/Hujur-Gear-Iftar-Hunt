@@ -10,10 +10,9 @@ const AdminUserSchema = new mongoose.Schema(
 );
 
 // Password hash করার আগে
-AdminUserSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+AdminUserSchema.pre("save", async function () {
+    if (!this.isModified("password")) return;
     this.password = await bcrypt.hash(this.password, 12);
-    next();
 });
 
 // Password verify করার method

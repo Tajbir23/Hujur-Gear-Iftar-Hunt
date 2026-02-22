@@ -24,7 +24,7 @@ export async function POST(request) {
 
         return NextResponse.json({ success: true, message: "Admin user created!", username: admin.username });
     } catch (error) {
-        console.error("Seed error:", error);
-        return NextResponse.json({ error: "Seed failed" }, { status: 500 });
+        console.error("Seed error details:", error);
+        return NextResponse.json({ error: error.message || "Seed failed", stack: error.stack }, { status: 500 });
     }
 }
