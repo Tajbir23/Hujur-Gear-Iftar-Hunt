@@ -29,7 +29,7 @@ export default function IftarCrashPage() {
     const [selectedMosque, setSelectedMosque] = useState(null);
     const [menuFormOpen, setMenuFormOpen] = useState(false);
 
-    const { data, mutate } = useSWR(
+    const { data, mutate, isLoading: mosquesLoading } = useSWR(
         `/api/mosques`,
         fetcher,
         {
@@ -126,6 +126,11 @@ export default function IftarCrashPage() {
                         onSelectMosque={handleSelectMosque}
                         onAddMosque={() => setAddMosqueOpen(true)}
                     />
+                ) : mosquesLoading ? (
+                    <div className="flex flex-col items-center justify-center py-24 gap-4">
+                        <Loader2 className="animate-spin text-primary" size={36} />
+                        <p className="text-text-secondary text-sm">মসজিদ লোড হচ্ছে...</p>
+                    </div>
                 ) : (
                     <MosqueList
                         mosques={mosques}
