@@ -4,7 +4,7 @@ import { verifyAdminToken, COOKIE_NAME } from "@/lib/utils/adminAuth";
 export async function middleware(request) {
     const { pathname } = request.nextUrl;
 
-    if (pathname.startsWith("/admin")) {
+    if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
         const token = request.cookies.get(COOKIE_NAME)?.value;
         const payload = token ? await verifyAdminToken(token) : null;
 
