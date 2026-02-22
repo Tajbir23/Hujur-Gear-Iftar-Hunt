@@ -3,8 +3,6 @@ import connectDB from "@/lib/db";
 import Mosque from "@/lib/models/Mosque";
 import IftarUpdate from "@/lib/models/IftarUpdate";
 import { getClientIp, getDeviceId, checkRateLimit, getTodayDate } from "@/lib/utils/fingerprint";
-import { isWithinGeoFence } from "@/lib/utils/haversine";
-import { isIftarWindow } from "@/lib/utils/timeValidation";
 
 /**
  * POST /api/iftar-update
@@ -19,13 +17,7 @@ import { isIftarWindow } from "@/lib/utils/timeValidation";
  */
 export async function POST(request) {
     try {
-        // ১. সময় উইন্ডো যাচাই
-        const timeCheck = isIftarWindow();
-        if (!timeCheck.allowed) {
-            return NextResponse.json({ error: timeCheck.message }, { status: 403 });
-        }
-
-        // ২. ডিভাইস ফিঙ্গারপ্রিন্ট
+        // ডিভাইস ফিঙ্গারপ্রিন্ট
         const deviceId = getDeviceId(request);
         if (!deviceId) {
             return NextResponse.json(
@@ -36,18 +28,11 @@ export async function POST(request) {
 
         const ip = await getClientIp();
         const body = await request.json();
-        const { mosqueId, menu, status, userLat, userLng } = body;
+        const { mosqueId, menu, status } = body;
 
         if (!mosqueId || !menu || !Array.isArray(menu) || menu.length === 0) {
             return NextResponse.json(
                 { error: "মসজিদ আইডি এবং মেনু (কমপক্ষে ১টি আইটেম) আবশ্যক" },
-                { status: 400 }
-            );
-        }
-
-        if (!userLat || !userLng) {
-            return NextResponse.json(
-                { error: "যাচাইয়ের জন্য আপনার লোকেশন প্রয়োজন" },
                 { status: 400 }
             );
         }
@@ -63,25 +48,13 @@ export async function POST(request) {
             );
         }
 
-        // ৪. জিও-ফেন্স চেক — মসজিদ থেকে ৫০০ মি. এর মধ্যে থাকতে হবে
+        // মসজিদ যাচাই
         const mosque = await Mosque.findById(mosqueId).lean();
         if (!mosque) {
             return NextResponse.json({ error: "মসজিদ খুঁজে পাওয়া যায়নি" }, { status: 404 });
         }
 
-        const [mosqueLng, mosqueLat] = mosque.location.coordinates;
-        const geoCheck = isWithinGeoFence(userLat, userLng, mosqueLat, mosqueLng, 500);
-
-        if (!geoCheck.withinRange) {
-            return NextResponse.json(
-                {
-                    error: `ইফতার আপডেট দিতে মসজিদ থেকে ৫০০ মিটারের মধ্যে থাকতে হবে। আপনি ${geoCheck.distance} মি. দূরে আছেন।`,
-                },
-                { status: 403 }
-            );
-        }
-
-        // ৫. MongoDB তে সেভ
+        // MongoDB তে সেভ
         const today = getTodayDate();
         const iftarUpdate = await IftarUpdate.create({
             mosqueId,

@@ -3,8 +3,7 @@ import connectDB from "@/lib/db";
 import Mosque from "@/lib/models/Mosque";
 import TarabiUpdate from "@/lib/models/TarabiUpdate";
 import { getClientIp, getDeviceId, checkRateLimit, getTodayDate } from "@/lib/utils/fingerprint";
-import { isWithinGeoFence } from "@/lib/utils/haversine";
-import { isTarabiWindow, calculateDuration } from "@/lib/utils/timeValidation";
+import { calculateDuration } from "@/lib/utils/timeValidation";
 
 /**
  * POST /api/tarabi-update
@@ -12,13 +11,7 @@ import { isTarabiWindow, calculateDuration } from "@/lib/utils/timeValidation";
  */
 export async function POST(request) {
     try {
-        // ১. সময় উইন্ডো যাচাই
-        const timeCheck = isTarabiWindow();
-        if (!timeCheck.allowed) {
-            return NextResponse.json({ error: timeCheck.message }, { status: 403 });
-        }
-
-        // ২. ডিভাইস ফিঙ্গারপ্রিন্ট
+        // ডিভাইস ফিঙ্গারপ্রিন্ট
         const deviceId = getDeviceId(request);
         if (!deviceId) {
             return NextResponse.json(
@@ -29,7 +22,7 @@ export async function POST(request) {
 
         const ip = await getClientIp();
         const body = await request.json();
-        const { mosqueId, startTime, endTime, userLat, userLng } = body;
+        const { mosqueId, startTime, endTime } = body;
 
         if (!mosqueId || !startTime || !endTime) {
             return NextResponse.json(
@@ -46,13 +39,6 @@ export async function POST(request) {
             );
         }
 
-        if (!userLat || !userLng) {
-            return NextResponse.json(
-                { error: "যাচাইয়ের জন্য আপনার লোকেশন প্রয়োজন" },
-                { status: 400 }
-            );
-        }
-
         await connectDB();
 
         // ৩. রেট লিমিট
@@ -64,25 +50,13 @@ export async function POST(request) {
             );
         }
 
-        // ৪. জিও-ফেন্স চেক
+        // মসজিদ যাচাই
         const mosque = await Mosque.findById(mosqueId).lean();
         if (!mosque) {
             return NextResponse.json({ error: "মসজিদ খুঁজে পাওয়া যায়নি" }, { status: 404 });
         }
 
-        const [mosqueLng, mosqueLat] = mosque.location.coordinates;
-        const geoCheck = isWithinGeoFence(userLat, userLng, mosqueLat, mosqueLng, 500);
-
-        if (!geoCheck.withinRange) {
-            return NextResponse.json(
-                {
-                    error: `মসজিদ থেকে ৫০০ মিটারের মধ্যে থাকতে হবে। আপনি ${geoCheck.distance} মি. দূরে আছেন।`,
-                },
-                { status: 403 }
-            );
-        }
-
-        // ৫. সময়কাল গণনা ও সেভ
+        // সময়কাল গণনা ও সেভ
         const durationMinutes = calculateDuration(startTime, endTime);
 
         if (durationMinutes < 10 || durationMinutes > 180) {
