@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "node --max-old-space-size=250 node_modules/next/dist/bin/next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
