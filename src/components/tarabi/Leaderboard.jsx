@@ -124,7 +124,7 @@ export default function Leaderboard({ onSelectMosque }) {
                                     <h3 className="font-semibold text-text-primary text-sm truncate">
                                         🕌 {entry.mosqueName}
                                     </h3>
-                                    <div className="flex items-center gap-3 mt-1">
+                                    <div className="flex items-center gap-3 mt-1 flex-wrap">
                                         <span className="text-xs text-text-muted">
                                             {entry.startTime} → {entry.endTime}
                                         </span>
@@ -132,6 +132,17 @@ export default function Leaderboard({ onSelectMosque }) {
                                             <span className="text-xs text-text-muted truncate">
                                                 📍 {entry.mosqueAddress}
                                             </span>
+                                        )}
+                                        {entry.mosqueLocation?.coordinates && (
+                                            <a
+                                                href={`https://www.google.com/maps?q=${entry.mosqueLocation.coordinates[1]},${entry.mosqueLocation.coordinates[0]}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="text-[11px] text-blue-400 hover:text-blue-300 transition-colors"
+                                            >
+                                                🗺️ Google Maps ↗
+                                            </a>
                                         )}
                                     </div>
                                     {entry.facilities?.length > 0 && (
@@ -149,10 +160,10 @@ export default function Leaderboard({ onSelectMosque }) {
                                         {index === 0 && <Flame size={16} className="text-accent" />}
                                         <span
                                             className={`text-xl font-bold ${index === 0
-                                                    ? "text-accent"
-                                                    : index < 3
-                                                        ? "text-primary-light"
-                                                        : "text-text-primary"
+                                                ? "text-accent"
+                                                : index < 3
+                                                    ? "text-primary-light"
+                                                    : "text-text-primary"
                                                 }`}
                                         >
                                             {entry.durationMinutes} মি.

@@ -130,12 +130,23 @@ export default function MapView({ lat, lng, onSelectMosque, onAddMosque }) {
                                         ))}
                                     </div>
                                 )}
-                                <button
-                                    onClick={() => onSelectMosque?.(mosque)}
-                                    className="w-full mt-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs rounded-lg transition-colors cursor-pointer"
-                                >
-                                    বিস্তারিত দেখুন / আপডেট দিন
-                                </button>
+                                <div className="flex gap-1.5 mt-1">
+                                    <a
+                                        href={`https://www.google.com/maps?q=${mosque.location.coordinates[1]},${mosque.location.coordinates[0]}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex-1 px-2 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors text-center"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        🗺️ Google Maps
+                                    </a>
+                                    <button
+                                        onClick={() => onSelectMosque?.(mosque)}
+                                        className="flex-1 px-2 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs rounded-lg transition-colors cursor-pointer"
+                                    >
+                                        🍛 আপডেট দিন
+                                    </button>
+                                </div>
                             </div>
                         </Popup>
                     </Marker>

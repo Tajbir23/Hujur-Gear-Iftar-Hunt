@@ -54,6 +54,7 @@ export async function GET() {
                     mosqueId: "$_id",
                     mosqueName: "$mosque.name",
                     mosqueAddress: "$mosque.address",
+                    mosqueLocation: "$mosque.location",
                     facilities: "$mosque.facilities",
                     startTime: 1,
                     endTime: 1,

@@ -66,6 +66,17 @@ function MosqueCard({ mosque, index, onSelect }) {
                             {mosque.address && (
                                 <p className="text-xs text-text-muted mt-0.5">{mosque.address}</p>
                             )}
+                            {mosque.location?.coordinates && (
+                                <a
+                                    href={`https://www.google.com/maps?q=${mosque.location.coordinates[1]},${mosque.location.coordinates[0]}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 mt-0.5 transition-colors"
+                                >
+                                    🗺️ Google Maps এ দেখুন ↗
+                                </a>
+                            )}
                         </div>
                         {latestUpdate && (
                             <Tag label={latestUpdate.status} />

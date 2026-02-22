@@ -20,6 +20,11 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    // কাস্টম কোঅর্ডিনেট
+    const [useCustomCoords, setUseCustomCoords] = useState(false);
+    const [customLat, setCustomLat] = useState("");
+    const [customLng, setCustomLng] = useState("");
+
     const toggleFacility = (facility) => {
         setFacilities((prev) =>
             prev.includes(facility)
@@ -28,9 +33,23 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
         );
     };
 
+    // ফাইনাল ল্যাট/লং নির্ধারণ
+    const finalLat = useCustomCoords ? parseFloat(customLat) : lat;
+    const finalLng = useCustomCoords ? parseFloat(customLng) : lng;
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!name.trim()) return;
+
+        if (useCustomCoords && (isNaN(finalLat) || isNaN(finalLng))) {
+            setError("সঠিক অক্ষাংশ ও দ্রাঘিমাংশ দিন। Google Maps থেকে কপি করুন।");
+            return;
+        }
+
+        if (!finalLat || !finalLng) {
+            setError("লোকেশন পাওয়া যায়নি। কাস্টম কোঅর্ডিনেট ব্যবহার করুন।");
+            return;
+        }
 
         setLoading(true);
         setError(null);
@@ -41,8 +60,8 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
                 headers: getApiHeaders(),
                 body: JSON.stringify({
                     name: name.trim(),
-                    lat,
-                    lng,
+                    lat: finalLat,
+                    lng: finalLng,
                     address: address.trim(),
                     facilities,
                 }),
@@ -58,6 +77,9 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
             setName("");
             setAddress("");
             setFacilities([]);
+            setCustomLat("");
+            setCustomLng("");
+            setUseCustomCoords(false);
             onSuccess?.(data.mosque);
             onClose();
         } catch {
@@ -70,12 +92,130 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="🕌 নতুন মসজিদ যোগ করুন">
             <form onSubmit={handleSubmit} className="space-y-5">
-                {/* লোকেশন তথ্য */}
-                <div className="bg-bg-surface rounded-lg p-3 text-sm text-text-secondary">
-                    📍 লোকেশন: {lat?.toFixed(5)}, {lng?.toFixed(5)}
-                    <p className="text-xs text-text-muted mt-1">
-                        এই মসজিদ আপনার বর্তমান জিপিএস লোকেশনে পিন করা হবে।
-                    </p>
+
+                {/* লোকেশন সোর্স টগল */}
+                <div className="space-y-3">
+                    <div className="flex items-center gap-3 bg-bg-surface rounded-lg p-3 border border-border">
+                        <button
+                            type="button"
+                            onClick={() => setUseCustomCoords(false)}
+                            className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${!useCustomCoords
+                                    ? "bg-primary text-white shadow-md"
+                                    : "text-text-secondary hover:text-text-primary"
+                                }`}
+                        >
+                            📍 আমার জিপিএস লোকেশন
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setUseCustomCoords(true)}
+                            className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${useCustomCoords
+                                    ? "bg-primary text-white shadow-md"
+                                    : "text-text-secondary hover:text-text-primary"
+                                }`}
+                        >
+                            🗺️ কাস্টম কোঅর্ডিনেট
+                        </button>
+                    </div>
+
+                    {/* জিপিএস লোকেশন তথ্য */}
+                    {!useCustomCoords && (
+                        <div className="bg-bg-surface rounded-lg p-3 text-sm text-text-secondary">
+                            📍 লোকেশন: {lat?.toFixed(5) || "—"}, {lng?.toFixed(5) || "—"}
+                            <p className="text-xs text-text-muted mt-1">
+                                আপনার বর্তমান জিপিএস লোকেশনে মসজিদ পিন করা হবে।
+                            </p>
+                        </div>
+                    )}
+
+                    {/* কাস্টম কোঅর্ডিনেট ইনপুট */}
+                    {useCustomCoords && (
+                        <div className="space-y-3">
+                            {/* Google Maps গাইড */}
+                            <div className="bg-accent/10 border border-accent/25 rounded-lg p-3 text-xs text-accent space-y-1.5">
+                                <p className="font-semibold">🗺️ Google Maps থেকে কোঅর্ডিনেট নেওয়ার নিয়ম:</p>
+                                <ol className="list-decimal list-inside space-y-1 text-text-secondary">
+                                    <li>
+                                        <a
+                                            href="https://maps.google.com"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-primary underline"
+                                        >
+                                            Google Maps
+                                        </a>
+                                        {" "}খুলুন
+                                    </li>
+                                    <li>মসজিদটি খুঁজে বের করুন</li>
+                                    <li>মসজিদের উপর <strong>রাইট-ক্লিক</strong> করুন (মোবাইলে লং-প্রেস)</li>
+                                    <li>প্রথম অপশনে <strong>কোঅর্ডিনেট</strong> দেখাবে — ক্লিক করে কপি করুন</li>
+                                    <li>কপি করা ভ্যালু এখানে পেস্ট করুন (কমা দিয়ে আলাদা)</li>
+                                </ol>
+                            </div>
+
+                            {/* পেস্ট ফিল্ড — একটা ফিল্ডে কমা দিয়ে দুটো দেওয়া যাবে */}
+                            <div>
+                                <label className="block text-sm font-medium text-text-secondary mb-1.5">
+                                    কোঅর্ডিনেট পেস্ট করুন
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder='যেমন: 23.81050, 90.41250'
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (val.includes(",")) {
+                                            const parts = val.split(",").map((s) => s.trim());
+                                            if (parts.length === 2) {
+                                                setCustomLat(parts[0]);
+                                                setCustomLng(parts[1]);
+                                            }
+                                        }
+                                    }}
+                                    className="w-full px-4 py-2.5 rounded-lg bg-bg-surface border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm"
+                                />
+                                <p className="text-xs text-text-muted mt-1">
+                                    Google Maps থেকে কপি করে সরাসরি পেস্ট করুন (যেমন: 23.81050, 90.41250)
+                                </p>
+                            </div>
+
+                            {/* আলাদা ল্যাট/লং ফিল্ড */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-medium text-text-secondary mb-1">
+                                        অক্ষাংশ (Latitude)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={customLat}
+                                        onChange={(e) => setCustomLat(e.target.value)}
+                                        placeholder="23.81050"
+                                        className="w-full px-3 py-2 rounded-lg bg-bg-surface border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-text-secondary mb-1">
+                                        দ্রাঘিমাংশ (Longitude)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="any"
+                                        value={customLng}
+                                        onChange={(e) => setCustomLng(e.target.value)}
+                                        placeholder="90.41250"
+                                        className="w-full px-3 py-2 rounded-lg bg-bg-surface border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* প্রিভিউ */}
+                            {customLat && customLng && !isNaN(parseFloat(customLat)) && !isNaN(parseFloat(customLng)) && (
+                                <div className="bg-green-500/10 border border-green-500/25 rounded-lg p-2.5 text-xs text-green-400">
+                                    ✅ কোঅর্ডিনেট সেট হয়েছে: {parseFloat(customLat).toFixed(5)}, {parseFloat(customLng).toFixed(5)}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* নাম */}
