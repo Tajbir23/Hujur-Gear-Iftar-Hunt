@@ -12,7 +12,7 @@ export async function GET(request) {
         const { searchParams } = new URL(request.url);
         const lat = parseFloat(searchParams.get("lat"));
         const lng = parseFloat(searchParams.get("lng"));
-        const radius = parseInt(searchParams.get("radius")) || 5000;
+        const radius = parseInt(searchParams.get("radius")) || 20000; // Increased to 20km default
 
         if (isNaN(lat) || isNaN(lng)) {
             return NextResponse.json(

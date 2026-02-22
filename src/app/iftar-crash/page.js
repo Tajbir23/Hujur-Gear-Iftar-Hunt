@@ -30,7 +30,7 @@ export default function IftarCrashPage() {
     const [menuFormOpen, setMenuFormOpen] = useState(false);
 
     const { data, mutate } = useSWR(
-        lat && lng ? `/api/mosques?lat=${lat}&lng=${lng}&radius=5000` : null,
+        lat && lng ? `/api/mosques?lat=${lat}&lng=${lng}&radius=20000` : null,
         fetcher,
         {
             refreshInterval: 60000,
@@ -77,8 +77,8 @@ export default function IftarCrashPage() {
                         <button
                             onClick={() => setViewMode("map")}
                             className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${viewMode === "map"
-                                    ? "bg-primary text-white shadow-md"
-                                    : "text-text-secondary hover:text-text-primary"
+                                ? "bg-primary text-white shadow-md"
+                                : "text-text-secondary hover:text-text-primary"
                                 }`}
                         >
                             <Map size={16} />
@@ -87,8 +87,8 @@ export default function IftarCrashPage() {
                         <button
                             onClick={() => setViewMode("list")}
                             className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${viewMode === "list"
-                                    ? "bg-primary text-white shadow-md"
-                                    : "text-text-secondary hover:text-text-primary"
+                                ? "bg-primary text-white shadow-md"
+                                : "text-text-secondary hover:text-text-primary"
                                 }`}
                         >
                             <List size={16} />

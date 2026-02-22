@@ -18,7 +18,7 @@ export default function RocketHujurPage() {
     const [showMosquePicker, setShowMosquePicker] = useState(false);
 
     const { data: mosqueData } = useSWR(
-        lat && lng ? `/api/mosques?lat=${lat}&lng=${lng}&radius=5000` : null,
+        lat && lng ? `/api/mosques?lat=${lat}&lng=${lng}&radius=20000` : null,
         fetcher,
         { revalidateOnFocus: false }
     );
