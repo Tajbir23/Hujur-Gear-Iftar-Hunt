@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
     MapPin, Rocket, Shield, Users, ThumbsUp, ThumbsDown,
     Navigation, Plus, Utensils, Timer, Trophy, AlertTriangle,
-    Smartphone, Globe, HelpCircle
+    Smartphone, Globe, HelpCircle, Clock
 } from "lucide-react";
 import Card from "@/components/ui/Card";
 
