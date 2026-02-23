@@ -12,14 +12,13 @@ const MosqueSchema = new mongoose.Schema(
             type: {
                 type: String,
                 enum: ["Point"],
-                required: true,
                 default: "Point",
             },
             coordinates: {
                 type: [Number], // [longitude, latitude]
-                required: [true, "Coordinates are required"],
                 validate: {
                     validator: function (coords) {
+                        if (!coords || coords.length === 0) return true; // optional
                         return (
                             coords.length === 2 &&
                             coords[0] >= -180 &&
@@ -61,8 +60,8 @@ const MosqueSchema = new mongoose.Schema(
     }
 );
 
-// 2dsphere index for geospatial queries
-MosqueSchema.index({ location: "2dsphere" });
+// 2dsphere index (sparse — allows documents without location)
+MosqueSchema.index({ location: "2dsphere" }, { sparse: true });
 
 // Text index for search
 MosqueSchema.index({ name: "text", address: "text" });

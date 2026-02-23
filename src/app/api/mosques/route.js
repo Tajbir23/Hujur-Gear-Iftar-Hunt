@@ -43,9 +43,25 @@ export async function POST(request) {
         const body = await request.json();
         const { name, lat, lng, address, facilities } = body;
 
-        if (!name || !lat || !lng) {
+        if (!name) {
             return NextResponse.json(
-                { error: "মসজিদের নাম, অক্ষাংশ ও দ্রাঘিমাংশ আবশ্যক" },
+                { error: "মসজিদের নাম আবশ্যক" },
+                { status: 400 }
+            );
+        }
+
+        const hasCoords = lat !== undefined && lat !== null && lng !== undefined && lng !== null;
+
+        if (hasCoords && (isNaN(parseFloat(lat)) || isNaN(parseFloat(lng)))) {
+            return NextResponse.json(
+                { error: "সঠিক অক্ষাংশ ও দ্রাঘিমাংশ দিন" },
+                { status: 400 }
+            );
+        }
+
+        if (!hasCoords && !address?.trim()) {
+            return NextResponse.json(
+                { error: "কোঅর্ডিনেট অথবা ঠিকানা অন্তত একটি দিতে হবে" },
                 { status: 400 }
             );
         }
@@ -61,37 +77,44 @@ export async function POST(request) {
             );
         }
 
-        // ১০০ মিটারের মধ্যে ডুপ্লিকেট মসজিদ চেক
-        const nearby = await Mosque.findOne({
-            location: {
-                $nearSphere: {
-                    $geometry: {
-                        type: "Point",
-                        coordinates: [lng, lat],
+        // ১০০ মিটারের মধ্যে ডুপ্লিকেট মসজিদ চেক (শুধু কোঅর্ডিনেট থাকলে)
+        if (hasCoords) {
+            const nearby = await Mosque.findOne({
+                location: {
+                    $nearSphere: {
+                        $geometry: {
+                            type: "Point",
+                            coordinates: [parseFloat(lng), parseFloat(lat)],
+                        },
+                        $maxDistance: 100,
                     },
-                    $maxDistance: 100,
                 },
-            },
-        }).lean();
+            }).lean();
 
-        if (nearby) {
-            return NextResponse.json(
-                { error: `"${nearby.name}" নামের একটি মসজিদ ইতিমধ্যে এই এলাকায় (১০০ মি.) আছে।` },
-                { status: 409 }
-            );
+            if (nearby) {
+                return NextResponse.json(
+                    { error: `"${nearby.name}" নামের একটি মসজিদ ইতিমধ্যে এই এলাকায় (১০০ মি.) আছে।` },
+                    { status: 409 }
+                );
+            }
         }
 
-        const mosque = await Mosque.create({
+        const mosqueData = {
             name: name.trim(),
-            location: {
-                type: "Point",
-                coordinates: [lng, lat],
-            },
             address: address?.trim() || "",
             facilities: facilities || [],
             addedBy: deviceId,
             addedByIp: ip,
-        });
+        };
+
+        if (hasCoords) {
+            mosqueData.location = {
+                type: "Point",
+                coordinates: [parseFloat(lng), parseFloat(lat)],
+            };
+        }
+
+        const mosque = await Mosque.create(mosqueData);
 
         return NextResponse.json({ mosque, message: "মসজিদ সফলভাবে যোগ হয়েছে!" }, { status: 201 });
     } catch (error) {

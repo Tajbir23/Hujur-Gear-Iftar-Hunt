@@ -21,9 +21,11 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
     const [error, setError] = useState(null);
 
     // কাস্টম কোঅর্ডিনেট
-    const [useCustomCoords, setUseCustomCoords] = useState(false);
+    const [locationMode, setLocationMode] = useState("gps"); // 'gps' | 'custom' | 'address'
     const [customLat, setCustomLat] = useState("");
     const [customLng, setCustomLng] = useState("");
+
+    const useCustomCoords = locationMode === "custom";
 
     const toggleFacility = (facility) => {
         setFacilities((prev) =>
@@ -34,20 +36,23 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
     };
 
     // ফাইনাল ল্যাট/লং নির্ধারণ
-    const finalLat = useCustomCoords ? parseFloat(customLat) : lat;
-    const finalLng = useCustomCoords ? parseFloat(customLng) : lng;
+    const finalLat = locationMode === "custom" ? parseFloat(customLat) : lat;
+    const finalLng = locationMode === "custom" ? parseFloat(customLng) : lng;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!name.trim()) return;
 
-        if (useCustomCoords && (isNaN(finalLat) || isNaN(finalLng))) {
+        if (locationMode === "address") {
+            if (!address.trim()) {
+                setError("ঠিকানা মোডে ঠিকানা দিতে হবে।");
+                return;
+            }
+        } else if (locationMode === "custom" && (isNaN(finalLat) || isNaN(finalLng))) {
             setError("সঠিক অক্ষাংশ ও দ্রাঘিমাংশ দিন। Google Maps থেকে কপি করুন।");
             return;
-        }
-
-        if (!finalLat || !finalLng) {
-            setError("লোকেশন পাওয়া যায়নি। কাস্টম কোঅর্ডিনেট ব্যবহার করুন।");
+        } else if (locationMode === "gps" && (!finalLat || !finalLng)) {
+            setError("লোকেশন পাওয়া যায়নি। কাস্টম কোঅর্ডিনেট বা ঠিকানা ব্যবহার করুন।");
             return;
         }
 
@@ -60,8 +65,8 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
                 headers: getApiHeaders(),
                 body: JSON.stringify({
                     name: name.trim(),
-                    lat: finalLat,
-                    lng: finalLng,
+                    lat: locationMode !== "address" ? finalLat : undefined,
+                    lng: locationMode !== "address" ? finalLng : undefined,
                     address: address.trim(),
                     facilities,
                 }),
@@ -79,7 +84,7 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
             setFacilities([]);
             setCustomLat("");
             setCustomLng("");
-            setUseCustomCoords(false);
+            setLocationMode("gps");
             onSuccess?.(data.mosque);
             onClose();
         } catch {
@@ -95,31 +100,33 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
 
                 {/* লোকেশন সোর্স টগল */}
                 <div className="space-y-3">
-                    <div className="flex items-center gap-3 bg-bg-surface rounded-lg p-3 border border-border">
+                    {/* লোকেশন সোর্স টগল — তিনটি অপশন */}
+                    <div className="flex items-center gap-2 bg-bg-surface rounded-lg p-2 border border-border">
                         <button
                             type="button"
-                            onClick={() => setUseCustomCoords(false)}
-                            className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${!useCustomCoords
-                                    ? "bg-primary text-white shadow-md"
-                                    : "text-text-secondary hover:text-text-primary"
-                                }`}
+                            onClick={() => setLocationMode("gps")}
+                            className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${locationMode === "gps" ? "bg-primary text-white shadow-md" : "text-text-secondary hover:text-text-primary"}`}
                         >
-                            📍 আমার জিপিএস লোকেশন
+                            📍 জিপিএস
                         </button>
                         <button
                             type="button"
-                            onClick={() => setUseCustomCoords(true)}
-                            className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${useCustomCoords
-                                    ? "bg-primary text-white shadow-md"
-                                    : "text-text-secondary hover:text-text-primary"
-                                }`}
+                            onClick={() => setLocationMode("custom")}
+                            className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${locationMode === "custom" ? "bg-primary text-white shadow-md" : "text-text-secondary hover:text-text-primary"}`}
                         >
-                            🗺️ কাস্টম কোঅর্ডিনেট
+                            🗺️ কোঅর্ডিনেট
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setLocationMode("address")}
+                            className={`flex-1 px-2 py-2 rounded-md text-xs font-medium transition-all cursor-pointer ${locationMode === "address" ? "bg-accent text-white shadow-md" : "text-text-secondary hover:text-text-primary"}`}
+                        >
+                            📝 শুধু ঠিকানা
                         </button>
                     </div>
 
                     {/* জিপিএস লোকেশন তথ্য */}
-                    {!useCustomCoords && (
+                    {locationMode === "gps" && (
                         <div className="bg-bg-surface rounded-lg p-3 text-sm text-text-secondary">
                             📍 লোকেশন: {lat?.toFixed(5) || "—"}, {lng?.toFixed(5) || "—"}
                             <p className="text-xs text-text-muted mt-1">
@@ -129,7 +136,7 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
                     )}
 
                     {/* কাস্টম কোঅর্ডিনেট ইনপুট */}
-                    {useCustomCoords && (
+                    {locationMode === "custom" && (
                         <div className="space-y-3">
                             {/* Google Maps গাইড */}
                             <div className="bg-accent/10 border border-accent/25 rounded-lg p-3 text-xs text-accent space-y-1.5">
@@ -216,6 +223,14 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
                             )}
                         </div>
                     )}
+
+                    {/* ঠিকানা-অনলি নোটিস */}
+                    {locationMode === "address" && (
+                        <div className="bg-accent/10 border border-accent/25 rounded-lg p-3 text-xs text-accent space-y-1">
+                            <p className="font-semibold">📝 শুধু ঠিকানা মোড</p>
+                            <p className="text-text-secondary">মসজিদটি ম্যাপে দেখাবে না, তবে ঠিকানা সর্চ থেকে খুঁজে পাওয়া যাবে।</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* নাম */}
@@ -237,14 +252,15 @@ export default function AddMosqueModal({ isOpen, onClose, lat, lng, onSuccess })
                 {/* ঠিকানা */}
                 <div>
                     <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                        ঠিকানা (ঐচ্ছিক)
+                        ঠিকানা {locationMode === "address" ? <span className="text-red-400">*</span> : "(ঐচ্ছিক)"}
                     </label>
                     <input
                         type="text"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
-                        placeholder='যেমন: "রোড ৫, ধানমন্ডি, ঢাকা"'
+                        placeholder={locationMode === "address" ? 'যেমন: "ধানমন্ডি ৫ নম্বর রোড, ঢাকা-১২০৫"' : 'যেমন: "রোড ৫, ধানমন্ডি, ঢাকা"'}
                         maxLength={200}
+                        required={locationMode === "address"}
                         className="w-full px-4 py-2.5 rounded-lg bg-bg-surface border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm"
                     />
                 </div>
