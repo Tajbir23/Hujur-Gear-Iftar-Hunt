@@ -59,12 +59,7 @@ export async function POST(request) {
         // সময়কাল গণনা ও সেভ
         const durationMinutes = calculateDuration(startTime, endTime);
 
-        if (durationMinutes < 10 || durationMinutes > 180) {
-            return NextResponse.json(
-                { error: "তারাবির সময়কাল ১০ থেকে ১৮০ মিনিটের মধ্যে হতে হবে" },
-                { status: 400 }
-            );
-        }
+
 
         const today = getTodayDate();
         const tarabiUpdate = await TarabiUpdate.create({

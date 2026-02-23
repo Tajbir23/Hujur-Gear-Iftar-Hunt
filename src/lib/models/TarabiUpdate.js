@@ -40,8 +40,6 @@ const TarabiUpdateSchema = new mongoose.Schema(
         durationMinutes: {
             type: Number,
             required: true,
-            min: [10, "Duration must be at least 10 minutes"],
-            max: [180, "Duration cannot exceed 180 minutes"],
         },
         date: {
             type: String, // YYYY-MM-DD

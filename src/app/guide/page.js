@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import {
-    MapPin, Rocket, Shield, Clock, Users, ThumbsUp, ThumbsDown,
+    MapPin, Rocket, Shield, Users, ThumbsUp, ThumbsDown,
     Navigation, Plus, Utensils, Timer, Trophy, AlertTriangle,
     Smartphone, Globe, HelpCircle
 } from "lucide-react";
@@ -110,12 +110,6 @@ const rules = [
         color: "text-blue-400",
     },
     {
-        icon: Clock,
-        title: "সময়সীমা",
-        desc: "ইফতার আপডেট: বিকাল ৪:০০ — সন্ধ্যা ৬:৩০ (ঢাকা সময়)। তারাবি আপডেট: রাত ৭:৩০ — ১১:৩০।",
-        color: "text-amber-400",
-    },
-    {
         icon: AlertTriangle,
         title: "দৈনিক লিমিট",
         desc: "প্রতিটি ডিভাইস থেকে প্রতিদিন সর্বোচ্চ ২টি আপডেট দেওয়া যাবে। এটি স্প্যাম প্রতিরোধের জন্য।",
@@ -164,7 +158,7 @@ const faqs = [
     },
     {
         q: "ইফতারের সময় ছাড়া কি আপডেট দিতে পারবো?",
-        a: "না। ইফতার আপডেট শুধু বিকাল ৪:০০–৬:৩০ এবং তারাবি আপডেট রাত ৭:৩০–১১:৩০ এর মধ্যে দেওয়া যাবে।",
+        a: "হ্যাঁ। ইফতার ও তারাবি আপডেট যেকোনো সময় দেওয়া যাবে।",
     },
     {
         q: "আমার ডেটা কি নিরাপদ?",
