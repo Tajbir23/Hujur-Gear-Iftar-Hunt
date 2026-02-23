@@ -55,7 +55,7 @@ export default function AdminLoginPage() {
                                 type="text"
                                 value={form.username}
                                 onChange={(e) => setForm((p) => ({ ...p, username: e.target.value }))}
-                                placeholder="tajbir23"
+                                placeholder="Username"
                                 required
                                 className="w-full pl-9 pr-4 py-2.5 rounded-lg bg-bg-surface border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                             />
