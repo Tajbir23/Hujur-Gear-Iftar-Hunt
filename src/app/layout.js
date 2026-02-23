@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import ReportButton from "@/components/layout/ReportButton";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -90,6 +91,7 @@ export default function RootLayout({ children }) {
               <a href="/privacy" className="text-text-muted hover:text-primary transition-colors">🔒 গোপনীয়তা নীতি</a>
             </div>
           </footer>
+          <ReportButton />
         </div>
 
         {/* JSON-LD Structured Data */}

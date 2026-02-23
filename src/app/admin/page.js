@@ -47,11 +47,17 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex gap-2">
                     <button
+                        onClick={() => router.push("/admin/reports")}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 transition-all text-sm cursor-pointer"
+                    >
+                        📝 User Reports
+                    </button>
+                    <button
                         onClick={() => mutate()}
-                        className="p-2 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-text-muted transition-all cursor-pointer"
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-text-muted transition-all cursor-pointer"
                         title="Refresh"
                     >
-                        <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
+                        <RefreshCw size={14} className={isLoading ? "animate-spin" : ""} /> Refresh
                     </button>
                     <button
                         onClick={handleLogout}
@@ -158,10 +164,10 @@ export default function AdminDashboard() {
                                                 <div className="text-xs text-text-muted">{u.menu?.join(", ")}</div>
                                             </div>
                                             <span className={`text-xs px-2 py-0.5 rounded-full ${u.status === "Food Available"
-                                                    ? "bg-emerald-500/20 text-emerald-400"
-                                                    : u.status === "Very Crowded"
-                                                        ? "bg-amber-500/20 text-amber-400"
-                                                        : "bg-red-500/20 text-red-400"
+                                                ? "bg-emerald-500/20 text-emerald-400"
+                                                : u.status === "Very Crowded"
+                                                    ? "bg-amber-500/20 text-amber-400"
+                                                    : "bg-red-500/20 text-red-400"
                                                 }`}>
                                                 {u.status}
                                             </span>
