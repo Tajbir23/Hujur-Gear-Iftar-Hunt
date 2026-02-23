@@ -4,8 +4,8 @@ import { useState } from "react";
 import useSWR from "swr";
 import Link from "next/link";
 import {
-    ArrowLeft, RefreshCw, Activity, Mosque, Utensils, Moon,
-    MapPin, MapPinOff, Eye, EyeOff, ThumbsUp, ThumbsDown, Clock
+    ArrowLeft, RefreshCw, Activity, Building2, Utensils, Moon,
+    MapPin, MapPinOff, EyeOff, ThumbsUp, ThumbsDown, Clock
 } from "lucide-react";
 
 const fetcher = (url) => fetch(url).then((r) => r.json());
@@ -20,7 +20,7 @@ function timeAgo(dateStr) {
 
 const TYPE_CONFIG = {
     mosque: {
-        icon: Mosque,
+        icon: Building2,
         color: "text-emerald-400",
         bg: "bg-emerald-500/10 border-emerald-500/30",
         dot: "bg-emerald-500",
@@ -110,8 +110,8 @@ function ActivityCard({ item }) {
                         <div className="text-xs text-text-secondary">🍛 {item.menu?.join(", ")}</div>
                         <div className="flex items-center gap-2 mt-1">
                             <span className={`text-xs px-2 py-0.5 rounded-full ${item.status === "Food Available" ? "bg-emerald-500/20 text-emerald-400"
-                                    : item.status === "Very Crowded" ? "bg-amber-500/20 text-amber-400"
-                                        : "bg-red-500/20 text-red-400"
+                                : item.status === "Very Crowded" ? "bg-amber-500/20 text-amber-400"
+                                    : "bg-red-500/20 text-red-400"
                                 }`}>{item.status}</span>
                             <VoteBadge fact={item.factVotes} fake={item.fakeVotes} />
                         </div>
@@ -209,8 +209,8 @@ export default function AdminActivity() {
                         key={f}
                         onClick={() => setActiveFilter(f)}
                         className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${activeFilter === f
-                                ? "bg-primary text-white shadow"
-                                : "bg-bg-card border border-border text-text-secondary hover:text-text-primary"
+                            ? "bg-primary text-white shadow"
+                            : "bg-bg-card border border-border text-text-secondary hover:text-text-primary"
                             }`}
                     >
                         {f}
