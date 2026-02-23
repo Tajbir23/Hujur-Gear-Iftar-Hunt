@@ -47,6 +47,12 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex gap-2">
                     <button
+                        onClick={() => router.push("/admin/activity")}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-primary/30 text-primary hover:bg-primary/10 transition-all text-sm cursor-pointer"
+                    >
+                        ⚡ Activity Feed
+                    </button>
+                    <button
                         onClick={() => router.push("/admin/reports")}
                         className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 transition-all text-sm cursor-pointer"
                     >
